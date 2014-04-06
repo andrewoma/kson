@@ -1,0 +1,4 @@
+Portions based on code from the Play Framework are under an Apache 2.0 license
+
+kson depends on Jackson which is under an Apache 2.0 license
+

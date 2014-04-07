@@ -11,3 +11,5 @@ This is just an experiment - not for production use. However, it does appear to 
 serialise to and from JSON, support building in a DSL fashion and allow extraction of attributes.
 
 See the [tests](/kson/src/test/java/com/github/andrewoma/kson) for examples.
+
+Build status: [![Build Status](https://travis-ci.org/andrewoma/kson.svg?branch=master)](https://travis-ci.org/andrewoma/kson)

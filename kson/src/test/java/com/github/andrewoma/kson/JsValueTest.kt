@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import org.junit.Before as before
 import com.github.andrewoma.kson.ext.*
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class JsValueTest {
     val mapper = ObjectMapper()
@@ -88,8 +89,30 @@ class JsValueTest {
     }
 
     test fun testExtraction() {
-        val petNames = value["pets"].map { it["name"].asString() }
+        assertEquals("Andrew", value["firstName"].asString())
+        assertEquals(21, value["age"].asInt())
+        assertTrue(value["adult"].asBoolean()!!)
 
+        assertEquals("Chapel Street", value["address"]["street"].asString())
+
+        val petNames = value["pets"].map { it["name"].asString() }
         assertEquals(listOf("Rover", "Kitty"), petNames)
+    }
+
+    test fun testIterationOfSingleNode() {
+        assertEquals(listOf(JsString("Andrew")), value["firstName"].toList())
+    }
+
+    test fun testConversions() {
+        assertConversion("A") { toJsValue(it).asString()!! }
+        assertConversion(true) { toJsValue(it).asBoolean()!! }
+        assertConversion(21) { toJsValue(it).asInt()!! }
+        assertConversion(21L) { toJsValue(it).asLong()!! }
+        assertConversion(21.3f) { toJsValue(it).asFloat()!! }
+        assertConversion(21.3) { toJsValue(it).asDouble()!! }
+    }
+
+    fun <T> assertConversion(value: T, f: (T) -> T) {
+        assertEquals(value, f(value))
     }
 }

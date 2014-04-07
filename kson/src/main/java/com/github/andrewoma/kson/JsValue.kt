@@ -42,8 +42,9 @@ public data open class JsValue : Iterable<JsValue> {
 
     open fun asString(): String? = null
     open fun asBoolean(): Boolean? = null
-    open fun asLong(): Long? = null
     open fun asInt(): Int? = null
+    open fun asLong(): Long? = null
+    open fun asFloat(): Float? = null
     open fun asDouble(): Double? = null
     open fun asBigDecimal(): BigDecimal? = null
 }
@@ -64,8 +65,9 @@ public data class JsString(val value: String?) : JsValue() {
 }
 
 public data class JsNumber(val value: BigDecimal?) : JsValue() {
-    override fun asLong() = if (value == null) null else value.longValue()
     override fun asInt() = if (value == null) null else value.intValue()
+    override fun asLong() = if (value == null) null else value.longValue()
+    override fun asFloat() = if (value == null) null else value.floatValue()
     override fun asDouble() = if (value == null) null else value.doubleValue()
     override fun asBigDecimal() = value
 }
@@ -81,4 +83,22 @@ public data class JsArray(val values: List<JsValue>) : JsValue() {
 }
 
 public data class JsUndefined() : JsValue()
-public data class JsNull() : JsValue()
+public data object JsNull : JsValue()
+
+public fun toJsValue(value: Any?) : JsValue {
+    if (value == null) return JsNull
+
+    return when (value) {
+        is JsValue -> value
+        is String -> JsString(value)
+        is Boolean -> JsBoolean(value)
+        is Int -> JsNumber(BigDecimal(value))
+        is Long -> JsNumber(BigDecimal(value))
+        is Float -> JsNumber(BigDecimal(value.toDouble()))
+        is Double -> JsNumber(BigDecimal(value))
+        is Number -> JsNumber(BigDecimal(value.toString()))
+        else -> throw IllegalArgumentException("Cannot convert ${value.javaClass.getName()} to a JsValue")
+    }
+}
+
+// TODO ... add fromJsValue to "unwrap" values?

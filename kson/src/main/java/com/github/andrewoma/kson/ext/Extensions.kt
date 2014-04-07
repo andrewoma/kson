@@ -30,16 +30,16 @@ import com.github.andrewoma.kson.JsNumber
 import java.math.BigDecimal
 
 public val String?.js: JsValue
-    get() = if (this == null) JsNull() else JsString(this)
+    get() = if (this == null) JsNull else JsString(this)
 
 public val Boolean?.js: JsValue
-    get() = if (this == null) JsNull() else JsBoolean(this)
+    get() = if (this == null) JsNull else JsBoolean(this)
 
 public val Int?.js: JsValue
-    get() = if (this == null) JsNull() else JsNumber(BigDecimal(this))
+    get() = if (this == null) JsNull else JsNumber(BigDecimal(this))
 
 public val Long?.js: JsValue
-    get() = if (this == null) JsNull() else JsNumber(BigDecimal(this))
+    get() = if (this == null) JsNull else JsNumber(BigDecimal(this))
 
 public val Double?.js: JsValue
-    get() = if (this == null) JsNull() else JsNumber(BigDecimal(this))
+    get() = if (this == null) JsNull else JsNumber(BigDecimal(this))

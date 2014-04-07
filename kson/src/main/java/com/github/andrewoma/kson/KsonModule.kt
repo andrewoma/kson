@@ -124,7 +124,7 @@ class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonD
 
             JsonToken.VALUE_FALSE -> JsBoolean(false)
 
-            JsonToken.VALUE_NULL -> JsNull()
+            JsonToken.VALUE_NULL -> JsNull
 
             JsonToken.START_ARRAY -> {
                 stack.push(ArrayContext())
@@ -181,7 +181,7 @@ class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonD
         }) as JsValue
     }
 
-    override fun getNullValue(): Any? = JsNull()
+    override fun getNullValue(): Any? = JsNull
 }
 
 class KsonDeserializers() : Deserializers.Base() {

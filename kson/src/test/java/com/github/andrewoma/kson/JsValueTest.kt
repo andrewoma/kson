@@ -62,7 +62,6 @@ class JsValueTest {
     )
 
     test fun testManualBuilding() {
-
         val actual = mapper.writeValueAsString(value)
         val expected = """
 {

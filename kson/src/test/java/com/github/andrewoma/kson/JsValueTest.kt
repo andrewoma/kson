@@ -38,27 +38,26 @@ class JsValueTest {
     }
 
     val value = JsObject(
-            "firstName" to "Andrew".json,
-            "lastName" to "O'Malley".json,
-            "age" to 21.json,
-            "adult" to true.json,
+            "firstName" to "Andrew".js,
+            "lastName" to "O'Malley".js,
+            "age" to 21.js,
+            "adult" to true.js,
             "address" to JsObject(
-                    "number" to "88".json,
-                    "street" to "Chapel Street".json,
-                    "suburb" to "Windsor".json,
-                    "state" to "VIC".json,
-                    "postCode" to "3181".json
+                    "number" to "88".js,
+                    "street" to "Chapel Street".js,
+                    "suburb" to "Windsor".js,
+                    "state" to "VIC".js,
+                    "postCode" to "3181".js
             ),
-            "pets" to JsArray(listOf(
+            "pets" to JsArray(
                     JsObject(
-                            "kind" to "dog".json,
-                            "name" to "Rover".json
+                            "kind" to "dog".js,
+                            "name" to "Rover".js
                     ),
                     JsObject(
-                            "kind" to "cat".json,
-                            "name" to "Kitty".json
+                            "kind" to "cat".js,
+                            "name" to "Kitty".js
                     )
-            )
             )
     )
 

@@ -81,15 +81,15 @@ class ArrayContext(val content: MutableList<JsValue> = arrayListOf()) : Deserial
     }
 }
 
-class ObjectKeyContext(val content: MutableList<Pair<String, JsValue>>, val fieldName: String) : DeserializerContext {
+class ObjectKeyContext(val content: MutableMap<String, JsValue>, val fieldName: String) : DeserializerContext {
     override fun addValue(value: JsValue): DeserializerContext {
-        content.add(fieldName to value)
+        content.put(fieldName, value)
         return ObjectContext(content)
     }
 }
 
 // Context for reading one item of an Object (we already read fieldName)
-class ObjectContext(val content: MutableList<Pair<String, JsValue>> = arrayListOf()) : DeserializerContext {
+class ObjectContext(val content: MutableMap<String, JsValue> = linkedMapOf()) : DeserializerContext {
     fun setField(fieldName: String) = ObjectKeyContext(content, fieldName)
     override fun addValue(value: JsValue): DeserializerContext {
         throw RuntimeException("Cannot add a value on an object without a key, malformed JSON object!")
@@ -132,8 +132,8 @@ class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonD
             }
 
             JsonToken.END_ARRAY -> {
-                val content = stack.pop()
-                if (content is ArrayContext) JsArray(content.content) else {
+                val arrayContext = stack.pop()
+                if (arrayContext is ArrayContext) JsArray(arrayContext.content) else {
                     throw RuntimeException("We should have been reading list, something got wrong")
                 }
             }
@@ -144,18 +144,17 @@ class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonD
             }
 
             JsonToken.FIELD_NAME -> {
-                val content = stack.pop()
-                if (content is ObjectContext) {
-                    stack.push(content.setField(jp.getCurrentName()!!))
+                val objectContext = stack.pop()
+                if (objectContext is ObjectContext) {
+                    stack.push(objectContext.setField(jp.getCurrentName()!!))
                     null
                 } else throw RuntimeException("We should be reading map, something got wrong")
 
             }
 
             JsonToken.END_OBJECT -> {
-                val content = stack.pop()
-                // TODO ... would be nice to avoid the conversion to an array
-                if (content is ObjectContext) JsObject(*content.content.copyToArray()) else {
+                val objectContext = stack.pop()
+                if (objectContext is ObjectContext) JsObject(objectContext.content) else {
                     throw RuntimeException("We should have been reading an object, something got wrong")
                 }
             }

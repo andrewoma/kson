@@ -48,12 +48,9 @@ public data open class JsValue : Iterable<JsValue> {
     open fun asBigDecimal(): BigDecimal? = null
 }
 
-public data class JsObject(vararg fields: Pair<String, JsValue>) : JsValue() {
-    val fields: Map<String, JsValue>;
-    {
-        this.fields = linkedMapOf(*fields)
-    }
+public fun JsObject(vararg fields: Pair<String, JsValue>): JsObject = JsObject(linkedMapOf(*fields))
 
+public data class JsObject(val fields: Map<String, JsValue>) : JsValue() {
     override fun get(name: String) = fields.getOrElse(name) { super.get(name) }
     override fun iterator() = fields.values().iterator()
 
@@ -76,6 +73,8 @@ public data class JsNumber(val value: BigDecimal?) : JsValue() {
 public data class JsBoolean(val value: Boolean?) : JsValue() {
     override fun asBoolean() = value
 }
+
+public fun JsArray(vararg values: JsValue): JsValue = JsArray(values.toList())
 
 public data class JsArray(val values: List<JsValue>) : JsValue() {
     override fun iterator() = values.iterator()

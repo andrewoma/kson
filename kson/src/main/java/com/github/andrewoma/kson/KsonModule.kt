@@ -194,12 +194,10 @@ class KsonDeserializers() : Deserializers.Base() {
 }
 
 class KsonSerializers : Serializers.Base() {
-    override fun findSerializer(config: SerializationConfig?, `type`: JavaType?, beanDesc: BeanDescription?): JsonSerializer<out Any?>? {
+    override fun findSerializer(config: SerializationConfig?, javaType: JavaType?, beanDesc: BeanDescription?): JsonSerializer<out Any?>? {
         return if (javaClass<JsValue>().isAssignableFrom(beanDesc!!.getBeanClass()!!)) {
             JsValueSerializer()
-        } else {
-            null
-        }
+        } else null
     }
 }
 

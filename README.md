@@ -12,7 +12,7 @@ serialise to and from JSON, support building in a DSL fashion and allow extracti
 
 ##### An example of manually building JSON:
 ```kotlin
-val value = JsObject(
+val person = JsObject(
         "firstName" to "Andrew".js,
         "lastName" to "O'Malley".js,
         "age" to 21.js,
@@ -39,8 +39,8 @@ val value = JsObject(
 
 ##### An example of extracting data from JSON:
 ```kotlin
-val street = value["address"]["street"] // Chapel Street
-val petNames = value["pets"].map { it["name"].asString() } // List("Rover", "Kitty")
+val street = person["address"]["street"] // Chapel Street
+val petNames = person["pets"].map { it["name"].asString() } // List("Rover", "Kitty")
 ```
 
 See the [tests](/kson/src/test/java/com/github/andrewoma/kson) for more examples.

@@ -10,6 +10,39 @@ It is a thin wrapper over Jackson. It is heavily inspired by (in fact, it's larg
 This is just an experiment - not for production use. However, it does appear to successfully
 serialise to and from JSON, support building in a DSL fashion and allow extraction of attributes.
 
-See the [tests](/kson/src/test/java/com/github/andrewoma/kson) for examples.
+##### An example of manually building JSON:
+```kotlin
+val value = JsObject(
+        "firstName" to "Andrew".js,
+        "lastName" to "O'Malley".js,
+        "age" to 21.js,
+        "adult" to true.js,
+        "address" to JsObject(
+                "number" to "88".js,
+                "street" to "Chapel Street".js,
+                "suburb" to "Windsor".js,
+                "state" to "VIC".js,
+                "postCode" to "3181".js
+        ),
+        "pets" to JsArray(
+                JsObject(
+                        "kind" to "dog".js,
+                        "name" to "Rover".js
+                ),
+                JsObject(
+                        "kind" to "cat".js,
+                        "name" to "Kitty".js
+                )
+        )
+)
+```
 
-Build status: [![Build Status](https://travis-ci.org/andrewoma/kson.svg?branch=master)](https://travis-ci.org/andrewoma/kson)
+##### An example of extracting data from JSON:
+```kotlin
+val street = value["address"]["street"] // Chapel Street
+val petNames = value["pets"].map { it["name"].asString() } // List("Rover", "Kitty")
+```
+
+See the [tests](/kson/src/test/java/com/github/andrewoma/kson) for more examples.
+
+[![Build Status](https://travis-ci.org/andrewoma/kson.svg?branch=master)](https://travis-ci.org/andrewoma/kson)

@@ -39,7 +39,7 @@ val person = JsObject(
 
 ##### An example of extracting data from JSON:
 ```kotlin
-val street = person["address"]["street"] // Chapel Street
+val street = person["address"]["street"].asString() // "Chapel Street"
 val petNames = person["pets"].map { it["name"].asString() } // List("Rover", "Kitty")
 ```
 

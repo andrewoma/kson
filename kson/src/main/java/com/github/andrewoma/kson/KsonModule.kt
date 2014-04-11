@@ -40,6 +40,8 @@ import com.fasterxml.jackson.databind.SerializationConfig
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.core.Version
 import com.fasterxml.jackson.databind.Module
+import com.fasterxml.jackson.core.JsonParseException
+import com.fasterxml.jackson.core.JsonLocation
 
 class JsValueSerializer : JsonSerializer<JsValue>() {
     override fun serialize(value: JsValue?, json: JsonGenerator?, provider: SerializerProvider?) {
@@ -71,18 +73,18 @@ class JsValueSerializer : JsonSerializer<JsValue>() {
 }
 
 trait DeserializerContext {
-    fun addValue(value: JsValue): DeserializerContext
+    fun addValue(value: JsValue, jsonParser: JsonParser): DeserializerContext
 }
 
 class ArrayContext(val content: MutableList<JsValue> = arrayListOf()) : DeserializerContext {
-    override fun addValue(value: JsValue): DeserializerContext {
+    override fun addValue(value: JsValue, jsonParser: JsonParser): DeserializerContext {
         content.add(value)
         return this
     }
 }
 
 class ObjectKeyContext(val content: MutableMap<String, JsValue>, val fieldName: String) : DeserializerContext {
-    override fun addValue(value: JsValue): DeserializerContext {
+    override fun addValue(value: JsValue, jsonParser: JsonParser): DeserializerContext {
         content.put(fieldName, value)
         return ObjectContext(content)
     }
@@ -91,10 +93,13 @@ class ObjectKeyContext(val content: MutableMap<String, JsValue>, val fieldName: 
 // Context for reading one item of an Object (we already read fieldName)
 class ObjectContext(val content: MutableMap<String, JsValue> = linkedMapOf()) : DeserializerContext {
     fun setField(fieldName: String) = ObjectKeyContext(content, fieldName)
-    override fun addValue(value: JsValue): DeserializerContext {
-        throw RuntimeException("Cannot add a value on an object without a key, malformed JSON object!")
+    override fun addValue(value: JsValue, jsonParser: JsonParser): DeserializerContext {
+        throw JsonParseException("Expected object key before value", jsonParser.location)
     }
 }
+
+val JsonParser.location : JsonLocation?
+    get() = this.getCurrentLocation()
 
 class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonDeserializer<Any>() {
     override fun isCachable() = true
@@ -110,6 +115,8 @@ class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonD
     }
 
     tailRecursive fun doDeserialize(jp: JsonParser, context: DeserializationContext, stack: Stack<DeserializerContext>): JsValue {
+        // Note: it appears that most of the error conditions within are unreachable as the JsonParser has already
+        // validated the sequence of tokens before calling us
         if (jp.getCurrentToken() == null) {
             jp.nextToken()
         }
@@ -134,7 +141,7 @@ class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonD
             JsonToken.END_ARRAY -> {
                 val arrayContext = stack.pop()
                 if (arrayContext is ArrayContext) JsArray(arrayContext.content) else {
-                    throw RuntimeException("We should have been reading list, something got wrong")
+                    throw JsonParseException("Array context expected", jp.location)
                 }
             }
 
@@ -148,20 +155,18 @@ class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonD
                 if (objectContext is ObjectContext) {
                     stack.push(objectContext.setField(jp.getCurrentName()!!))
                     null
-                } else throw RuntimeException("We should be reading map, something got wrong")
-
+                } else throw JsonParseException("Object context expected", jp.location)
             }
 
             JsonToken.END_OBJECT -> {
                 val objectContext = stack.pop()
                 if (objectContext is ObjectContext) JsObject(objectContext.content) else {
-                    throw RuntimeException("We should have been reading an object, something got wrong")
+                    throw JsonParseException("Object context expected", jp.location)
                 }
             }
 
-            JsonToken.NOT_AVAILABLE -> throw RuntimeException("We should have been reading an object, something got wrong")
-            JsonToken.VALUE_EMBEDDED_OBJECT -> throw RuntimeException("We should have been reading an object, something got wrong")
-            else -> throw IllegalStateException()
+            JsonToken.NOT_AVAILABLE -> throw JsonParseException("Non-blocking parser not supported", jp.location)
+            else -> throw JsonParseException("Unexpected token: ${jp.getCurrentToken()?.name()}", jp.location)
         }
 
         jp.nextToken() // Read ahead
@@ -169,11 +174,11 @@ class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonD
         return (if (value != null && stack.isEmpty() && jp.getCurrentToken() == null) {
             value
         } else if (value != null && stack.isEmpty()) {
-            throw RuntimeException("Malformed JSON: Got a sequence of JsValue outside an array or an object.")
+            throw JsonParseException("Unexpected value", jp.location)
         } else {
             val toPass = if (value == null) stack else {
                 val previous = stack.pop()!!
-                stack.push(previous.addValue(value))
+                stack.push(previous.addValue(value, jp))
                 stack
             }
 

@@ -29,6 +29,7 @@ import org.junit.Before as before
 import com.fasterxml.jackson.databind.JsonNode
 import kotlin.test.assertEquals
 import java.io.InputStreamReader
+import com.fasterxml.jackson.core.JsonParseException
 
 class KsonModuleTest {
     val mapper = ObjectMapper()
@@ -52,5 +53,17 @@ class KsonModuleTest {
         val expected = mapper.readValue(resource(resource), javaClass<JsonNode>())
         val actual = mapper.readValue(output, javaClass<JsonNode>())
         assertEquals(expected, actual)
+    }
+
+    test(expected = javaClass<JsonParseException>()) fun malformedWithExtraEndArray() {
+        mapper.readValue("[1, 2, 3]]", javaClass<JsValue>())
+    }
+
+    test(expected = javaClass<JsonParseException>()) fun malformedWithExtraEndObject() {
+        mapper.readValue("""{"k": 1}}""", javaClass<JsValue>())
+    }
+
+    test(expected = javaClass<JsonParseException>()) fun malformedObjectWithoutKey() {
+        mapper.readValue("{1}", javaClass<JsValue>())
     }
 }

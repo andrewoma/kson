@@ -104,15 +104,13 @@ class JsValueTest {
     }
 
     test fun testConversions() {
+        fun <T> assertConversion(value: T, f: (T) -> T) = assertEquals(value, f(value))
+
         assertConversion("A") { toJsValue(it).asString()!! }
         assertConversion(true) { toJsValue(it).asBoolean()!! }
         assertConversion(21) { toJsValue(it).asInt()!! }
         assertConversion(21L) { toJsValue(it).asLong()!! }
         assertConversion(21.3f) { toJsValue(it).asFloat()!! }
         assertConversion(21.3) { toJsValue(it).asDouble()!! }
-    }
-
-    fun <T> assertConversion(value: T, f: (T) -> T) {
-        assertEquals(value, f(value))
     }
 }

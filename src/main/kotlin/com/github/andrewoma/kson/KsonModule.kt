@@ -171,7 +171,7 @@ class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonD
 
         jp.nextToken() // Read ahead
 
-        return (if (value != null && stack.isEmpty() && jp.getCurrentToken() == null) {
+        return if (value != null && stack.isEmpty() && jp.getCurrentToken() == null) {
             value
         } else if (value != null && stack.isEmpty()) {
             throw JsonParseException("Unexpected value", jp.location)
@@ -183,7 +183,7 @@ class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonD
             }
 
             doDeserialize(jp, context, toPass)
-        }) as JsValue
+        }
     }
 
     override fun getNullValue(): Any? = JsNull

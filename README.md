@@ -43,6 +43,6 @@ val street = person["address"]["street"].asString() // "Chapel Street"
 val petNames = person["pets"].map { it["name"].asString() } // List("Rover", "Kitty")
 ```
 
-See the [tests](/kson/src/test/java/com/github/andrewoma/kson) for more examples.
+See the [tests](/src/test/java/com/github/andrewoma/kson) for more examples.
 
 [![Build Status](https://travis-ci.org/andrewoma/kson.svg?branch=master)](https://travis-ci.org/andrewoma/kson)

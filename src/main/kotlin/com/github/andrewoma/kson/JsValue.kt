@@ -22,8 +22,8 @@
 
 package com.github.andrewoma.kson
 
-import java.util.NoSuchElementException
 import java.math.BigDecimal
+import java.util.NoSuchElementException
 
 public data open class JsValue : Iterable<JsValue> {
     open fun get(name: String): JsValue = JsUndefined()
@@ -36,6 +36,7 @@ public data open class JsValue : Iterable<JsValue> {
             } else {
                 throw NoSuchElementException()
             }
+
             override fun hasNext() = next
         }
     }
@@ -83,9 +84,10 @@ public data class JsArray(val values: List<JsValue>) : JsValue() {
 }
 
 public data class JsUndefined() : JsValue()
+
 public data object JsNull : JsValue()
 
-public fun toJsValue(value: Any?) : JsValue {
+public fun toJsValue(value: Any?): JsValue {
     if (value == null) return JsNull
 
     return when (value) {

@@ -22,13 +22,13 @@
 
 package com.github.andrewoma.kson
 
-import org.junit.Test as test
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import org.junit.Before as before
-import com.github.andrewoma.kson.ext.*
+import com.github.andrewoma.kson.ext.js
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import org.junit.Before as before
+import org.junit.Test as test
 
 class JsValueTest {
     val mapper = ObjectMapper()

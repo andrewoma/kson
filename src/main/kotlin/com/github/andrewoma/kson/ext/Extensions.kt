@@ -22,11 +22,7 @@
 
 package com.github.andrewoma.kson.ext
 
-import com.github.andrewoma.kson.JsString
-import com.github.andrewoma.kson.JsNull
-import com.github.andrewoma.kson.JsValue
-import com.github.andrewoma.kson.JsBoolean
-import com.github.andrewoma.kson.JsNumber
+import com.github.andrewoma.kson.*
 import java.math.BigDecimal
 
 public val String?.js: JsValue

@@ -22,14 +22,14 @@
 
 package com.github.andrewoma.kson
 
-import org.junit.Test as test
+import com.fasterxml.jackson.core.JsonParseException
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import org.junit.Before as before
-import com.fasterxml.jackson.databind.JsonNode
-import kotlin.test.assertEquals
 import java.io.InputStreamReader
-import com.fasterxml.jackson.core.JsonParseException
+import kotlin.test.assertEquals
+import org.junit.Before as before
+import org.junit.Test as test
 
 class KsonModuleTest {
     val mapper = ObjectMapper()

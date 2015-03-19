@@ -22,26 +22,12 @@
 
 package com.github.andrewoma.kson
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.`type`.TypeFactory
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.core.JsonToken
-import java.util.Stack
+import com.fasterxml.jackson.core.*
+import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.deser.Deserializers
-import com.fasterxml.jackson.databind.JavaType
-import com.fasterxml.jackson.databind.DeserializationConfig
-import com.fasterxml.jackson.databind.BeanDescription
-import com.fasterxml.jackson.databind.ser.Serializers
-import com.fasterxml.jackson.databind.SerializationConfig
 import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.core.Version
-import com.fasterxml.jackson.databind.Module
-import com.fasterxml.jackson.core.JsonParseException
-import com.fasterxml.jackson.core.JsonLocation
+import com.fasterxml.jackson.databind.ser.Serializers
+import java.util.Stack
 
 class JsValueSerializer : JsonSerializer<JsValue>() {
     override fun serialize(value: JsValue?, json: JsonGenerator?, provider: SerializerProvider?) {
@@ -98,7 +84,7 @@ class ObjectContext(val content: MutableMap<String, JsValue> = linkedMapOf()) : 
     }
 }
 
-val JsonParser.location : JsonLocation?
+val JsonParser.location: JsonLocation?
     get() = this.getCurrentLocation()
 
 class JsValueDeserializer(val klass: Class<*>) : JsonDeserializer<Any>() {

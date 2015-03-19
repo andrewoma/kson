@@ -65,10 +65,10 @@ public data class JsString(val value: String?) : JsValue() {
 }
 
 public data class JsNumber(val value: BigDecimal?) : JsValue() {
-    override fun asInt() = if (value == null) null else value.intValue()
-    override fun asLong() = if (value == null) null else value.longValue()
-    override fun asFloat() = if (value == null) null else value.floatValue()
-    override fun asDouble() = if (value == null) null else value.doubleValue()
+    override fun asInt() = value?.intValue()
+    override fun asLong() = value?.longValue()
+    override fun asFloat() = value?.floatValue()
+    override fun asDouble() = value?.doubleValue()
     override fun asBigDecimal() = value
 }
 

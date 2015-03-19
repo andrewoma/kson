@@ -101,7 +101,7 @@ class ObjectContext(val content: MutableMap<String, JsValue> = linkedMapOf()) : 
 val JsonParser.location : JsonLocation?
     get() = this.getCurrentLocation()
 
-class JsValueDeserializer(val factory: TypeFactory, val klass: Class<*>) : JsonDeserializer<Any>() {
+class JsValueDeserializer(val klass: Class<*>) : JsonDeserializer<Any>() {
     override fun isCachable() = true
 
     override fun deserialize(jp: JsonParser?, ctxt: DeserializationContext?): Any? {
@@ -193,7 +193,7 @@ class KsonDeserializers() : Deserializers.Base() {
     override fun findBeanDeserializer(javaType: JavaType?, config: DeserializationConfig?, beanDesc: BeanDescription?): JsonDeserializer<out Any?>? {
         val klass = javaType?.getRawClass()!!
         return if (javaClass<JsValue>().isAssignableFrom(klass) || klass == javaClass<JsNull>()) {
-            JsValueDeserializer(config!!.getTypeFactory()!!, klass)
+            JsValueDeserializer(klass)
         } else null
     }
 }

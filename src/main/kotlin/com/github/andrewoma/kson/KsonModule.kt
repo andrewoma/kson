@@ -58,7 +58,7 @@ class JsValueSerializer : JsonSerializer<JsValue>() {
     }
 }
 
-trait DeserializerContext {
+interface DeserializerContext {
     fun addValue(value: JsValue, jsonParser: JsonParser): DeserializerContext
 }
 

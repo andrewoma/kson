@@ -55,15 +55,15 @@ class KsonModuleTest {
         assertEquals(expected, actual)
     }
 
-    test(expected = javaClass<JsonParseException>()) fun malformedWithExtraEndArray() {
+    test(expected = JsonParseException::class) fun malformedWithExtraEndArray() {
         mapper.readValue("[1, 2, 3]]", javaClass<JsValue>())
     }
 
-    test(expected = javaClass<JsonParseException>()) fun malformedWithExtraEndObject() {
+    test(expected = JsonParseException::class) fun malformedWithExtraEndObject() {
         mapper.readValue("""{"k": 1}}""", javaClass<JsValue>())
     }
 
-    test(expected = javaClass<JsonParseException>()) fun malformedObjectWithoutKey() {
+    test(expected = JsonParseException::class) fun malformedObjectWithoutKey() {
         mapper.readValue("{1}", javaClass<JsValue>())
     }
 }

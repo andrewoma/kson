@@ -85,7 +85,7 @@ class ObjectContext(val content: MutableMap<String, JsValue> = linkedMapOf()) : 
 }
 
 val JsonParser.location: JsonLocation?
-    get() = this.getCurrentLocation()
+    get() = this.currentLocation
 
 class JsValueDeserializer(val klass: Class<*>) : JsonDeserializer<Any>() {
     override fun isCachable() = true
@@ -100,18 +100,18 @@ class JsValueDeserializer(val klass: Class<*>) : JsonDeserializer<Any>() {
         return value
     }
 
-    tailRecursive fun doDeserialize(jp: JsonParser, context: DeserializationContext, stack: Stack<DeserializerContext>): JsValue {
+    tailrec fun doDeserialize(jp: JsonParser, context: DeserializationContext, stack: Stack<DeserializerContext>): JsValue {
         // Note: it appears that most of the error conditions within are unreachable as the JsonParser has already
         // validated the sequence of tokens before calling us
-        if (jp.getCurrentToken() == null) {
+        if (jp.currentToken == null) {
             jp.nextToken()
         }
 
-        val value: JsValue? = when (jp.getCurrentToken()) {
+        val value: JsValue? = when (jp.currentToken) {
 
-            JsonToken.VALUE_NUMBER_INT, JsonToken.VALUE_NUMBER_FLOAT -> JsNumber(jp.getDecimalValue())
+            JsonToken.VALUE_NUMBER_INT, JsonToken.VALUE_NUMBER_FLOAT -> JsNumber(jp.decimalValue)
 
-            JsonToken.VALUE_STRING -> JsString(jp.getText())
+            JsonToken.VALUE_STRING -> JsString(jp.text)
 
             JsonToken.VALUE_TRUE -> JsBoolean(true)
 
@@ -139,7 +139,7 @@ class JsValueDeserializer(val klass: Class<*>) : JsonDeserializer<Any>() {
             JsonToken.FIELD_NAME -> {
                 val objectContext = stack.pop()
                 if (objectContext is ObjectContext) {
-                    stack.push(objectContext.setField(jp.getCurrentName()!!))
+                    stack.push(objectContext.setField(jp.currentName!!))
                     null
                 } else throw JsonParseException("Object context expected", jp.location)
             }
@@ -152,12 +152,12 @@ class JsValueDeserializer(val klass: Class<*>) : JsonDeserializer<Any>() {
             }
 
             JsonToken.NOT_AVAILABLE -> throw JsonParseException("Non-blocking parser not supported", jp.location)
-            else -> throw JsonParseException("Unexpected token: ${jp.getCurrentToken()?.name()}", jp.location)
+            else -> throw JsonParseException("Unexpected token: ${jp.currentToken?.name()}", jp.location)
         }
 
         jp.nextToken() // Read ahead
 
-        return if (value != null && stack.isEmpty() && jp.getCurrentToken() == null) {
+        return if (value != null && stack.isEmpty() && jp.currentToken == null) {
             value
         } else if (value != null && stack.isEmpty()) {
             throw JsonParseException("Unexpected value", jp.location)
@@ -177,8 +177,8 @@ class JsValueDeserializer(val klass: Class<*>) : JsonDeserializer<Any>() {
 
 class KsonDeserializers() : Deserializers.Base() {
     override fun findBeanDeserializer(javaType: JavaType?, config: DeserializationConfig?, beanDesc: BeanDescription?): JsonDeserializer<out Any?>? {
-        val klass = javaType?.getRawClass()!!
-        return if (javaClass<JsValue>().isAssignableFrom(klass) || klass == javaClass<JsNull>()) {
+        val klass = javaType?.rawClass!!
+        return if (JsValue::class.java.isAssignableFrom(klass) || klass == JsNull::class.java) {
             JsValueDeserializer(klass)
         } else null
     }
@@ -186,7 +186,7 @@ class KsonDeserializers() : Deserializers.Base() {
 
 class KsonSerializers : Serializers.Base() {
     override fun findSerializer(config: SerializationConfig?, javaType: JavaType?, beanDesc: BeanDescription?): JsonSerializer<out Any?>? {
-        return if (javaClass<JsValue>().isAssignableFrom(beanDesc!!.getBeanClass()!!)) {
+        return if (JsValue::class.java.isAssignableFrom(beanDesc!!.beanClass!!)) {
             JsValueSerializer()
         } else null
     }

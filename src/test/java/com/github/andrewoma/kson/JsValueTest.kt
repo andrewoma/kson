@@ -27,13 +27,13 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.github.andrewoma.kson.ext.js
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import org.junit.Before as before
-import org.junit.Test as test
+import org.junit.Before
+import org.junit.Test
 
 class JsValueTest {
     val mapper = ObjectMapper()
 
-    before fun setUp() {
+    @Before fun setUp() {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         mapper.registerModule(KsonModule())
     }
@@ -62,7 +62,7 @@ class JsValueTest {
             )
     )
 
-    test fun testManualBuilding() {
+    @Test fun testManualBuilding() {
         val actual = mapper.writeValueAsString(value)
         val expected = """
 {
@@ -88,7 +88,7 @@ class JsValueTest {
         assertEquals(expected.trim(), actual)
     }
 
-    test fun testExtraction() {
+    @Test fun testExtraction() {
         assertEquals("Andrew", value["firstName"].asString())
         assertEquals(21, value["age"].asInt())
         assertTrue(value["adult"].asBoolean()!!)
@@ -99,11 +99,11 @@ class JsValueTest {
         assertEquals(listOf("Rover", "Kitty"), petNames)
     }
 
-    test fun testIterationOfSingleNode() {
+    @Test fun testIterationOfSingleNode() {
         assertEquals(listOf(JsString("Andrew")), value["firstName"].toList())
     }
 
-    test fun testConversions() {
+    @Test fun testConversions() {
         fun <T> assertConversion(value: T, f: (T) -> T) = assertEquals(value, f(value))
 
         assertConversion("A") { toJsValue(it).asString()!! }

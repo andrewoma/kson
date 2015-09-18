@@ -28,42 +28,42 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import java.io.InputStreamReader
 import kotlin.test.assertEquals
-import org.junit.Before as before
-import org.junit.Test as test
+import org.junit.Before
+import org.junit.Test
 
 class KsonModuleTest {
     val mapper = ObjectMapper()
 
-    before fun setUp() {
+    @Before fun setUp() {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         mapper.registerModule(KsonModule())
     }
 
-    fun resource(name: String) = InputStreamReader(javaClass.getClassLoader()!!.getResourceAsStream(name)!!, "UTF8")
+    fun resource(name: String) = InputStreamReader(javaClass.classLoader!!.getResourceAsStream(name)!!, "UTF8")
 
-    test fun testSample1() {
+    @Test fun testSample1() {
         assertRoundTrip("sample1.json")
     }
 
     fun assertRoundTrip(resource: String) {
-        val jsValue = mapper.readValue(resource(resource), javaClass<JsValue>())
+        val jsValue = mapper.readValue(resource(resource), JsValue::class.java)
         val output = mapper.writeValueAsString(jsValue)
 
         // Now parse the output and input using Jackson's JsonNode to compare
-        val expected = mapper.readValue(resource(resource), javaClass<JsonNode>())
-        val actual = mapper.readValue(output, javaClass<JsonNode>())
+        val expected = mapper.readValue(resource(resource), JsonNode::class.java)
+        val actual = mapper.readValue(output, JsonNode::class.java)
         assertEquals(expected, actual)
     }
 
-    test(expected = JsonParseException::class) fun malformedWithExtraEndArray() {
-        mapper.readValue("[1, 2, 3]]", javaClass<JsValue>())
+    @Test(expected = JsonParseException::class) fun malformedWithExtraEndArray() {
+        mapper.readValue("[1, 2, 3]]", JsValue::class.java)
     }
 
-    test(expected = JsonParseException::class) fun malformedWithExtraEndObject() {
-        mapper.readValue("""{"k": 1}}""", javaClass<JsValue>())
+    @Test(expected = JsonParseException::class) fun malformedWithExtraEndObject() {
+        mapper.readValue("""{"k": 1}}""", JsValue::class.java)
     }
 
-    test(expected = JsonParseException::class) fun malformedObjectWithoutKey() {
-        mapper.readValue("{1}", javaClass<JsValue>())
+    @Test(expected = JsonParseException::class) fun malformedObjectWithoutKey() {
+        mapper.readValue("{1}", JsValue::class.java)
     }
 }

@@ -99,7 +99,7 @@ public fun toJsValue(value: Any?): JsValue {
         is Float -> JsNumber(BigDecimal(value.toDouble()))
         is Double -> JsNumber(BigDecimal(value))
         is Number -> JsNumber(BigDecimal(value.toString()))
-        else -> throw IllegalArgumentException("Cannot convert ${value.javaClass.getName()} to a JsValue")
+        else -> throw IllegalArgumentException("Cannot convert ${value.javaClass.name} to a JsValue")
     }
 }
 

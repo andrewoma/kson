@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '0.12.213'
+        kotlinVersion = '0.13.1513'
     }
     repositories {
         mavenCentral()
@@ -15,6 +15,10 @@ apply plugin: "maven"
 
 group = "com.github.andrewoma.kson"
 version = "0.1-SNAPSHOT"
+
+compileKotlin {
+    kotlinOptions.moduleName = "${project.group}"
+}
 
 repositories {
     mavenCentral()

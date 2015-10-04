@@ -27,12 +27,10 @@ import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.databind.deser.Deserializers
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.Serializers
-import java.util.Stack
+import java.util.*
 
 class JsValueSerializer : JsonSerializer<JsValue>() {
-    override fun serialize(value: JsValue?, json: JsonGenerator?, provider: SerializerProvider?) {
-        json!!
-
+    override fun serialize(value: JsValue, json: JsonGenerator, provider: SerializerProvider) {
         when (value) {
             is JsNumber -> json.writeNumber(value.asBigDecimal())
             is JsString -> json.writeString(value.asString())
@@ -90,8 +88,8 @@ val JsonParser.location: JsonLocation?
 class JsValueDeserializer(val klass: Class<*>) : JsonDeserializer<Any>() {
     override fun isCachable() = true
 
-    override fun deserialize(jp: JsonParser?, ctxt: DeserializationContext?): Any? {
-        val value = doDeserialize(jp!!, ctxt!!, Stack<DeserializerContext>())
+    override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Any? {
+        val value = doDeserialize(jp, ctxt, Stack<DeserializerContext>())
 
         if (!klass.isAssignableFrom(value.javaClass)) {
             throw ctxt.mappingException(klass)!!
@@ -176,25 +174,21 @@ class JsValueDeserializer(val klass: Class<*>) : JsonDeserializer<Any>() {
 }
 
 class KsonDeserializers() : Deserializers.Base() {
-    override fun findBeanDeserializer(javaType: JavaType?, config: DeserializationConfig?, beanDesc: BeanDescription?): JsonDeserializer<out Any?>? {
-        val klass = javaType?.rawClass!!
-        return if (JsValue::class.java.isAssignableFrom(klass) || klass == JsNull::class.java) {
-            JsValueDeserializer(klass)
-        } else null
+    override fun findBeanDeserializer(javaType: JavaType, config: DeserializationConfig, beanDesc: BeanDescription): JsonDeserializer<out Any?>? {
+        val klass = javaType.rawClass
+        return if (JsValue::class.java.isAssignableFrom(klass) || klass == JsNull::class.java) JsValueDeserializer(klass) else null
     }
 }
 
 class KsonSerializers : Serializers.Base() {
-    override fun findSerializer(config: SerializationConfig?, javaType: JavaType?, beanDesc: BeanDescription?): JsonSerializer<out Any?>? {
-        return if (JsValue::class.java.isAssignableFrom(beanDesc!!.beanClass!!)) {
-            JsValueSerializer()
-        } else null
+    override fun findSerializer(config: SerializationConfig, javaType: JavaType, beanDesc: BeanDescription): JsonSerializer<out Any?>? {
+        return if (JsValue::class.java.isAssignableFrom(beanDesc.beanClass)) JsValueSerializer() else null
     }
 }
 
-public class KsonModule() : SimpleModule("kson", Version.unknownVersion()) {
-    override fun setupModule(context: Module.SetupContext?) {
-        context!!.addDeserializers(KsonDeserializers())
+class KsonModule() : SimpleModule("kson", Version.unknownVersion()) {
+    override fun setupModule(context: Module.SetupContext) {
+        context.addDeserializers(KsonDeserializers())
         context.addSerializers(KsonSerializers())
     }
 }

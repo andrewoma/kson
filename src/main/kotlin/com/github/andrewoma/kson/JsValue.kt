@@ -25,8 +25,8 @@ package com.github.andrewoma.kson
 import java.math.BigDecimal
 import java.util.NoSuchElementException
 
-public data open class JsValue : Iterable<JsValue> {
-    open fun get(name: String): JsValue = JsUndefined()
+interface JsValue : Iterable<JsValue> {
+    open operator fun get(name: String): JsValue = JsUndefined
     override fun iterator(): Iterator<JsValue> {
         return object : Iterator<JsValue> {
             var next = true
@@ -50,9 +50,9 @@ public data open class JsValue : Iterable<JsValue> {
     open fun asBigDecimal(): BigDecimal? = null
 }
 
-public fun JsObject(vararg fields: Pair<String, JsValue>): JsObject = JsObject(linkedMapOf(*fields))
+fun JsObject(vararg fields: Pair<String, JsValue>): JsObject = JsObject(linkedMapOf(*fields))
 
-public data class JsObject(val fields: Map<String, JsValue>) : JsValue() {
+data class JsObject(val fields: Map<String, JsValue>) : JsValue {
     override fun get(name: String) = fields.getOrElse(name) { super.get(name) }
     override fun iterator() = fields.values().iterator()
 
@@ -61,11 +61,11 @@ public data class JsObject(val fields: Map<String, JsValue>) : JsValue() {
     }
 }
 
-public data class JsString(val value: String?) : JsValue() {
+data class JsString(val value: String?) : JsValue {
     override fun asString(): String? = value
 }
 
-public data class JsNumber(val value: BigDecimal?) : JsValue() {
+data class JsNumber(val value: BigDecimal?) : JsValue {
     override fun asInt() = value?.intValue()
     override fun asLong() = value?.longValue()
     override fun asFloat() = value?.floatValue()
@@ -73,21 +73,21 @@ public data class JsNumber(val value: BigDecimal?) : JsValue() {
     override fun asBigDecimal() = value
 }
 
-public data class JsBoolean(val value: Boolean?) : JsValue() {
+data class JsBoolean(val value: Boolean?) : JsValue {
     override fun asBoolean() = value
 }
 
-public fun JsArray(vararg values: JsValue): JsValue = JsArray(values.toList())
+fun JsArray(vararg values: JsValue): JsValue = JsArray(values.toList())
 
-public data class JsArray(val values: List<JsValue>) : JsValue() {
+data class JsArray(val values: List<JsValue>) : JsValue {
     override fun iterator() = values.iterator()
 }
 
-public data class JsUndefined() : JsValue()
+object JsUndefined : JsValue
 
-public data object JsNull : JsValue()
+object JsNull : JsValue
 
-public fun toJsValue(value: Any?): JsValue {
+fun toJsValue(value: Any?): JsValue {
     if (value == null) return JsNull
 
     return when (value) {

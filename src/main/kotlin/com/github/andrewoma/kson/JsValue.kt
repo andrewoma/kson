@@ -54,7 +54,7 @@ fun JsObject(vararg fields: Pair<String, JsValue>): JsObject = JsObject(linkedMa
 
 data class JsObject(val fields: Map<String, JsValue>) : JsValue {
     override fun get(name: String) = fields.getOrElse(name) { super.get(name) }
-    override fun iterator() = fields.values().iterator()
+    override fun iterator() = fields.values.iterator()
 
     override fun toString(): String {
         return "JsObject($fields)"
@@ -66,10 +66,10 @@ data class JsString(val value: String?) : JsValue {
 }
 
 data class JsNumber(val value: BigDecimal?) : JsValue {
-    override fun asInt() = value?.intValue()
-    override fun asLong() = value?.longValue()
-    override fun asFloat() = value?.floatValue()
-    override fun asDouble() = value?.doubleValue()
+    override fun asInt() = value?.toInt()
+    override fun asLong() = value?.toLong()
+    override fun asFloat() = value?.toFloat()
+    override fun asDouble() = value?.toDouble()
     override fun asBigDecimal() = value
 }
 

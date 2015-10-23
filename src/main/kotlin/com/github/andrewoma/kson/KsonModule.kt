@@ -150,7 +150,7 @@ class JsValueDeserializer(val klass: Class<*>) : JsonDeserializer<Any>() {
             }
 
             JsonToken.NOT_AVAILABLE -> throw JsonParseException("Non-blocking parser not supported", jp.location)
-            else -> throw JsonParseException("Unexpected token: ${jp.currentToken?.name()}", jp.location)
+            else -> throw JsonParseException("Unexpected token: ${jp.currentToken?.name}", jp.location)
         }
 
         jp.nextToken() // Read ahead

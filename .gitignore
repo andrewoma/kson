@@ -3,3 +3,4 @@ atlassian-ide-plugin.xml
 target
 build
 .gradle
+*.iml
